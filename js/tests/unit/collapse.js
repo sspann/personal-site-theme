@@ -1,5 +1,5 @@
 $(function () {
-  'use strict'
+  'use strict';
 
   QUnit.module('collapse plugin')
 
@@ -24,18 +24,6 @@ $(function () {
     assert.strictEqual($.fn.collapse, undefined, 'collapse was set back to undefined (org value)')
   })
 
-  QUnit.test('should throw explicit error on undefined method', function (assert) {
-    assert.expect(1)
-    var $el = $('<div/>')
-    $el.bootstrapCollapse()
-    try {
-      $el.bootstrapCollapse('noMethod')
-    }
-    catch (err) {
-      assert.strictEqual(err.message, 'No method named "noMethod"')
-    }
-  })
-
   QUnit.test('should return jquery collection containing the element', function (assert) {
     assert.expect(2)
     var $el = $('<div/>')
@@ -48,38 +36,15 @@ $(function () {
     assert.expect(2)
     var $el = $('<div class="collapse"/>').bootstrapCollapse('show')
 
-    assert.ok($el.hasClass('show'), 'has class "show"')
+    assert.ok($el.hasClass('in'), 'has class "in"')
     assert.ok(!/height/i.test($el.attr('style')), 'has height reset')
-  })
-
-  QUnit.test('should collapse only the first collapse', function (assert) {
-    assert.expect(2)
-    var html = [
-      '<div class="panel-group" id="accordion1">',
-      '<div class="panel">',
-      '<div id="collapse1" class="collapse"/>',
-      '</div>',
-      '</div>',
-      '<div class="panel-group" id="accordion2">',
-      '<div class="panel">',
-      '<div id="collapse2" class="collapse show"/>',
-      '</div>',
-      '</div>'
-    ].join('')
-    $(html).appendTo('#qunit-fixture')
-    var $el1 = $('#collapse1')
-    var $el2 = $('#collapse2')
-    $el1.bootstrapCollapse('show')
-
-    assert.ok($el1.hasClass('show'))
-    assert.ok($el2.hasClass('show'))
   })
 
   QUnit.test('should hide a collapsed element', function (assert) {
     assert.expect(1)
     var $el = $('<div class="collapse"/>').bootstrapCollapse('hide')
 
-    assert.ok(!$el.hasClass('show'), 'does not have class "show"')
+    assert.ok(!$el.hasClass('in'), 'does not have class "in"')
   })
 
   QUnit.test('should not fire shown when show is prevented', function (assert) {
@@ -113,21 +78,6 @@ $(function () {
       .bootstrapCollapse('show')
   })
 
-  QUnit.test('should reset style to auto after finishing closing collapse', function (assert) {
-    assert.expect(1)
-    var done = assert.async()
-
-    $('<div class="collapse"/>')
-      .on('shown.bs.collapse', function () {
-        $(this).bootstrapCollapse('hide')
-      })
-      .on('hidden.bs.collapse', function () {
-        assert.strictEqual(this.style.height, '', 'height is auto')
-        done()
-      })
-      .bootstrapCollapse('show')
-  })
-
   QUnit.test('should remove "collapsed" class from target when collapse is shown', function (assert) {
     assert.expect(1)
     var done = assert.async()
@@ -150,7 +100,7 @@ $(function () {
 
     var $target = $('<a role="button" data-toggle="collapse" href="#test1"/>').appendTo('#qunit-fixture')
 
-    $('<div id="test1" class="show"/>')
+    $('<div id="test1" class="in"/>')
       .appendTo('#qunit-fixture')
       .on('hidden.bs.collapse', function () {
         assert.ok($target.hasClass('collapsed'), 'target has collapsed class')
@@ -185,7 +135,7 @@ $(function () {
     var $target = $('<a role="button" data-toggle="collapse" href="#test1"/>').appendTo('#qunit-fixture')
     var $alt = $('<a role="button" data-toggle="collapse" href="#test1"/>').appendTo('#qunit-fixture')
 
-    $('<div id="test1" class="show"/>')
+    $('<div id="test1" class="in"/>')
       .appendTo('#qunit-fixture')
       .on('hidden.bs.collapse', function () {
         assert.ok($target.hasClass('collapsed'), 'target has collapsed class')
@@ -200,7 +150,7 @@ $(function () {
     assert.expect(0)
     var done = assert.async()
 
-    var $test = $('<div id="test1" class="show"/>')
+    var $test = $('<div id="test1" class="in"/>')
       .appendTo('#qunit-fixture')
       .on('hide.bs.collapse', function () {
         assert.ok(false)
@@ -244,7 +194,7 @@ $(function () {
     assert.expect(1)
     var done = assert.async()
 
-    $('<div class="collapse show"></div>')
+    $('<div class="collapse in"></div>')
       .appendTo('#qunit-fixture')
       .on('hide.bs.collapse', function () {
         assert.ok(true, 'hiding a previously-uninitialized shown collapse when the "hide" method is called')
@@ -258,24 +208,24 @@ $(function () {
     assert.expect(3)
     var done = assert.async()
 
-    var accordionHTML = '<div id="accordion">'
-        + '<div class="card"/>'
-        + '<div class="card"/>'
-        + '<div class="card"/>'
+    var accordionHTML = '<div class="panel-group" id="accordion">'
+        + '<div class="panel"/>'
+        + '<div class="panel"/>'
+        + '<div class="panel"/>'
         + '</div>'
-    var $groups = $(accordionHTML).appendTo('#qunit-fixture').find('.card')
+    var $groups = $(accordionHTML).appendTo('#qunit-fixture').find('.panel')
 
-    var $target1 = $('<a role="button" data-toggle="collapse" href="#body1" />').appendTo($groups.eq(0))
+    var $target1 = $('<a role="button" data-toggle="collapse" href="#body1" data-parent="#accordion"/>').appendTo($groups.eq(0))
 
-    $('<div id="body1" class="show" data-parent="#accordion"/>').appendTo($groups.eq(0))
+    $('<div id="body1" class="in"/>').appendTo($groups.eq(0))
 
-    var $target2 = $('<a class="collapsed" data-toggle="collapse" role="button" href="#body2" />').appendTo($groups.eq(1))
+    var $target2 = $('<a class="collapsed" data-toggle="collapse" role="button" href="#body2" data-parent="#accordion"/>').appendTo($groups.eq(1))
 
-    $('<div id="body2" data-parent="#accordion"/>').appendTo($groups.eq(1))
+    $('<div id="body2"/>').appendTo($groups.eq(1))
 
-    var $target3 = $('<a class="collapsed" data-toggle="collapse" role="button" href="#body3" />').appendTo($groups.eq(2))
+    var $target3 = $('<a class="collapsed" data-toggle="collapse" role="button" href="#body3" data-parent="#accordion"/>').appendTo($groups.eq(2))
 
-    $('<div id="body3" data-parent="#accordion"/>')
+    $('<div id="body3"/>')
       .appendTo($groups.eq(2))
       .on('shown.bs.collapse', function () {
         assert.ok($target1.hasClass('collapsed'), 'inactive target 1 does have class "collapsed"')
@@ -292,24 +242,24 @@ $(function () {
     assert.expect(3)
     var done = assert.async()
 
-    var accordionHTML = '<div class="accordion">'
-        + '<div class="card"/>'
-        + '<div class="card"/>'
-        + '<div class="card"/>'
+    var accordionHTML = '<div class="panel-group accordion">'
+        + '<div class="panel"/>'
+        + '<div class="panel"/>'
+        + '<div class="panel"/>'
         + '</div>'
-    var $groups = $(accordionHTML).appendTo('#qunit-fixture').find('.card')
+    var $groups = $(accordionHTML).appendTo('#qunit-fixture').find('.panel')
 
-    var $target1 = $('<a role="button" data-toggle="collapse" href="#body1"/>').appendTo($groups.eq(0))
+    var $target1 = $('<a role="button" data-toggle="collapse" href="#body1" data-parent=".accordion"/>').appendTo($groups.eq(0))
 
-    $('<div id="body1" class="show" data-parent=".accordion"/>').appendTo($groups.eq(0))
+    $('<div id="body1" class="in"/>').appendTo($groups.eq(0))
 
-    var $target2 = $('<a class="collapsed" data-toggle="collapse" role="button" href="#body2"/>').appendTo($groups.eq(1))
+    var $target2 = $('<a class="collapsed" data-toggle="collapse" role="button" href="#body2" data-parent=".accordion"/>').appendTo($groups.eq(1))
 
-    $('<div id="body2" data-parent=".accordion"/>').appendTo($groups.eq(1))
+    $('<div id="body2"/>').appendTo($groups.eq(1))
 
-    var $target3 = $('<a class="collapsed" data-toggle="collapse" role="button" href="#body3"/>').appendTo($groups.eq(2))
+    var $target3 = $('<a class="collapsed" data-toggle="collapse" role="button" href="#body3" data-parent=".accordion"/>').appendTo($groups.eq(2))
 
-    $('<div id="body3" data-parent=".accordion"/>')
+    $('<div id="body3"/>')
       .appendTo($groups.eq(2))
       .on('shown.bs.collapse', function () {
         assert.ok($target1.hasClass('collapsed'), 'inactive target 1 does have class "collapsed"')
@@ -344,7 +294,7 @@ $(function () {
 
     var $target = $('<a role="button" data-toggle="collapse" href="#test1" aria-expanded="true"/>').appendTo('#qunit-fixture')
 
-    $('<div id="test1" class="show"/>')
+    $('<div id="test1" class="in"/>')
       .appendTo('#qunit-fixture')
       .on('hidden.bs.collapse', function () {
         assert.strictEqual($target.attr('aria-expanded'), 'false', 'aria-expanded on target is "false"')
@@ -379,7 +329,7 @@ $(function () {
     var $target = $('<a role="button" data-toggle="collapse" href="#test1" aria-expanded="true"/>').appendTo('#qunit-fixture')
     var $alt = $('<a role="button" data-toggle="collapse" href="#test1" aria-expanded="true"/>').appendTo('#qunit-fixture')
 
-    $('<div id="test1" class="show"/>')
+    $('<div id="test1" class="in"/>')
       .appendTo('#qunit-fixture')
       .on('hidden.bs.collapse', function () {
         assert.strictEqual($target.attr('aria-expanded'), 'false', 'aria-expanded on target is "false"')
@@ -394,24 +344,24 @@ $(function () {
     assert.expect(3)
     var done = assert.async()
 
-    var accordionHTML = '<div id="accordion">'
-        + '<div class="card"/>'
-        + '<div class="card"/>'
-        + '<div class="card"/>'
+    var accordionHTML = '<div class="panel-group" id="accordion">'
+        + '<div class="panel"/>'
+        + '<div class="panel"/>'
+        + '<div class="panel"/>'
         + '</div>'
-    var $groups = $(accordionHTML).appendTo('#qunit-fixture').find('.card')
+    var $groups = $(accordionHTML).appendTo('#qunit-fixture').find('.panel')
 
-    var $target1 = $('<a role="button" data-toggle="collapse" href="#body1"/>').appendTo($groups.eq(0))
+    var $target1 = $('<a role="button" data-toggle="collapse" href="#body1" data-parent="#accordion"/>').appendTo($groups.eq(0))
 
-    $('<div id="body1" aria-expanded="true" class="show" data-parent="#accordion"/>').appendTo($groups.eq(0))
+    $('<div id="body1" aria-expanded="true" class="in"/>').appendTo($groups.eq(0))
 
-    var $target2 = $('<a role="button" data-toggle="collapse" href="#body2" class="collapsed" aria-expanded="false" />').appendTo($groups.eq(1))
+    var $target2 = $('<a class="collapsed" data-toggle="collapse" role="button" href="#body2" data-parent="#accordion"/>').appendTo($groups.eq(1))
 
-    $('<div id="body2" aria-expanded="false" data-parent="#accordion"/>').appendTo($groups.eq(1))
+    $('<div id="body2" aria-expanded="false"/>').appendTo($groups.eq(1))
 
-    var $target3 = $('<a class="collapsed" data-toggle="collapse" role="button" href="#body3"/>').appendTo($groups.eq(2))
+    var $target3 = $('<a class="collapsed" data-toggle="collapse" role="button" href="#body3" data-parent="#accordion"/>').appendTo($groups.eq(2))
 
-    $('<div id="body3" aria-expanded="false" data-parent="#accordion"/>')
+    $('<div id="body3" aria-expanded="false"/>')
       .appendTo($groups.eq(2))
       .on('shown.bs.collapse', function () {
         assert.strictEqual($target1.attr('aria-expanded'), 'false', 'inactive target 1 has aria-expanded="false"')
@@ -429,28 +379,28 @@ $(function () {
     var done = assert.async()
 
     var accordionHTML = '<div id="accordion">'
-        + '<div class="card"/>'
-        + '<div class="card"/>'
+        + '<div class="panel"/>'
+        + '<div class="panel"/>'
         + '</div>'
     var showFired = false
-    var $groups   = $(accordionHTML).appendTo('#qunit-fixture').find('.card')
+    var $groups   = $(accordionHTML).appendTo('#qunit-fixture').find('.panel')
 
-    var $target1 = $('<a role="button" data-toggle="collapse" href="#body1"/>').appendTo($groups.eq(0))
+    var $target1 = $('<a role="button" data-toggle="collapse" href="#body1" data-parent="#accordion"/>').appendTo($groups.eq(0))
 
-    $('<div id="body1" class="collapse" data-parent="#accordion"/>')
+    $('<div id="body1" class="collapse"/>')
       .appendTo($groups.eq(0))
       .on('show.bs.collapse', function () {
         showFired = true
       })
 
-    var $target2 = $('<a role="button" data-toggle="collapse" href="#body2"/>').appendTo($groups.eq(1))
-    var $body2   = $('<div id="body2" class="collapse" data-parent="#accordion"/>').appendTo($groups.eq(1))
+    var $target2 = $('<a role="button" data-toggle="collapse" href="#body2" data-parent="#accordion"/>').appendTo($groups.eq(1))
+    var $body2   = $('<div id="body2" class="collapse"/>').appendTo($groups.eq(1))
 
     $target2.trigger('click')
 
     $body2
-      .toggleClass('show collapsing')
-      .data('bs.collapse')._isTransitioning = 1
+      .toggleClass('in collapsing')
+      .data('bs.collapse').transitioning = 1
 
     $target1.trigger('click')
 
@@ -466,7 +416,7 @@ $(function () {
 
     var $target = $('<a role="button" data-toggle="collapse" href="#test1"/>').appendTo('#qunit-fixture')
 
-    $('<div id="test1" class="show"/>')
+    $('<div id="test1" class="in"/>')
       .appendTo('#qunit-fixture')
       .on('hidden.bs.collapse', function () {
         assert.ok($target.hasClass('collapsed'))
@@ -490,44 +440,4 @@ $(function () {
       .bootstrapCollapse('show')
   })
 
-  QUnit.test('should allow accordion to use children other than card', function (assert) {
-    assert.expect(2)
-    var done = assert.async()
-    var accordionHTML = '<div id="accordion" data-children=".item">'
-        + '<div class="item">'
-        + '<a id="linkTrigger" data-parent="#accordion" data-toggle="collapse" href="#collapseOne" aria-expanded="false" aria-controls="collapseOne"></a>'
-        + '<div id="collapseOne" class="collapse" role="tabpanel" aria-labelledby="headingThree"></div>'
-        + '</div>'
-        + '<div class="item">'
-        + '<a data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo"></a>'
-        + '<div id="collapseTwo" class="collapse show" role="tabpanel" aria-labelledby="headingTwo"></div>'
-        + '</div>'
-        + '</div>'
-
-    $(accordionHTML).appendTo('#qunit-fixture')
-    var $target = $('#linkTrigger')
-    $('#collapseOne').on('shown.bs.collapse', function () {
-      assert.ok($(this).hasClass('show'))
-      assert.ok(!$('#collapseTwo').hasClass('show'))
-      done()
-    })
-    $target.trigger($.Event('click'))
-  })
-
-  QUnit.test('should not prevent event for input', function (assert) {
-    assert.expect(3)
-    var done = assert.async()
-    var $target = $('<input type="checkbox" data-toggle="collapse" data-target="#collapsediv1" />').appendTo('#qunit-fixture')
-
-    $('<div id="collapsediv1"/>')
-      .appendTo('#qunit-fixture')
-      .on('shown.bs.collapse', function () {
-        assert.ok($(this).hasClass('show'))
-        assert.ok($target.attr('aria-expanded') === 'true')
-        assert.ok($target.prop('checked'))
-        done()
-      })
-
-    $target.trigger($.Event('click'))
-  })
 })
